@@ -1,0 +1,177 @@
+const data = [
+    {id: 0,     name: 'Sergio',     age: 18,    dept: [2]},
+    {id: 1,     name: 'Maxime',     age: 52,    dept: [4,8]},
+    {id: 2,     name: 'Aurelien',   age: 16,    dept: [1,11]},
+    {id: 3,     name: 'Anthony',    age: 19,    dept: [9,5,6,2,1]},
+    {id: 4,     name: 'Emma',       age: 87,    dept: [10,6,9,8]},
+    {id: 5,     name: 'Amanda',     age: 56,    dept: []},
+    {id: 6,     name: 'Julien',     age: 11,    dept: [3]},
+    {id: 7,     name: 'David',      age: 23,    dept: [5]},
+    {id: 8,     name: 'Florian',    age: 38,    dept: [7,10]},
+    {id: 9,     name: 'Nathan',     age: 56,    dept: [4,6]},
+    {id: 10,    name: 'Thibaut',    age: 29,    dept: []},
+    {id: 11,    name: 'Hugo',       age: 18,    dept: [2,6]}
+]
+
+const main = () => {
+
+    //Pour conserver l'integrite des données, on les copie sur un tableau
+    let copy_data=data.slice();
+   
+    // Exercice 1 : Liste des prénoms des utilisateurs (tableau)
+    const usernames=[]; //chaine des noms
+
+    console.log('Liste des prénoms des utilisateurs : '+'\n');
+    for(i=0;i<copy_data.length;i++){
+        usernames[i]=data[i].name;
+        console.log(' '+ usernames[i] + '\t');
+    }
+    console.log('\n');
+     
+     
+    // Exercice 2 : Liste des prénoms des utilisateus triés par age descendant
+    
+    /*
+    Pour cette partie, on peut utiliser la methode sort pour trier
+    le tri dépend d'un paramètre car sort sert à trier des string
+    pour que cette methode fonctionne sur des nombres, on utilise
+    une fonction permettant de les comparer
+    */ 
+    
+    const usernames_two=[];
+    for(let i=0;i<copy_data.length;i++){
+        usernames_two[i]=copy_data.sort(function (a,b){
+            return b.age-a.age;
+        })[i].name;
+    }
+    
+    copy_data=data.slice();
+    console.log('\n'+'Tri des prénoms par age descendant :'+usernames_two +'\n');
+  
+    
+    
+    
+    // Exercice 3 : La personne qui doit le plus de repas aux autres
+    
+    let s=0,max=0,str=usernames[max];
+    const sums=[];
+
+    
+    for(let i=0;i<copy_data.length;i++){
+    
+        for(let j=0;j<copy_data[i].dept.length;j++){
+            s+=1;
+        }
+        sums[i]=s; // tableau récapitulatif des repas dus
+        s=0;
+        
+        /*
+        On parcourt la liste du nombre de repas dus et si on trouve un
+        nombre plus grand que notre max, on le prend à la place
+        NB : j'ai utilisé la liste des usernames de l'exercice1
+	  */
+        
+        if( sums[i]>=sums[max] ){
+            
+		/*Si deux ou plusieures personnes ont 
+		le même nombre de repas dus et sont max on les affiche ensemble
+		*/
+
+            if( sums[i]==sums[max] ){
+                str = str.concat(", "+usernames[i]);
+            }
+            
+            else if( sums[i]>sums[max] ){
+                str = str.replace(str,usernames[i]);
+            }
+    
+            max=i;
+        }
+    }
+    
+    
+    const person_who_debt_most_meal = str;
+    console.log('\n'+ "Personne qui doit le + de repas : "+ person_who_debt_most_meal +"\n");
+    
+    
+
+    // Exercice 4 : La personne à qui les autres doivent le plus de repas
+    
+    let index,index_max=0,str2="";
+    const list_meal_debt_by_id = new Array(12).fill(0);
+    
+    /*
+	on va rechercher le nombre d'occurences d'un ID sur un tableau 
+	dont les indices sont les ID compris entre 0 et 11
+   */
+
+    for(let i=0; i<copy_data.length;i++) {
+        for(let j=0; j<=copy_data[i].dept.length;j++){
+            //on repère son indice sur le tableau
+            index=copy_data[i].dept[j];
+            //on ajoute 1 sur le tableau pour cet indice
+            list_meal_debt_by_id[index]+=1;
+        }
+    }
+
+   
+    //On trouve l'indice max sur le tableau à l'aide des fonctions indexOf() et max    
+    index_max=list_meal_debt_by_id.indexOf(Math.max.apply(null, list_meal_debt_by_id));
+    const person_who_deserve_meal=usernames[index_max];
+
+    console.log("Personne à qui on doit le + de repas : "+ person_who_deserve_meal +'\n');
+    
+    // Exercice 5 : Une fonction qui prend en parametre une personne et renvoie une chaine de caracteres comme celle-ci :
+    //      - "Nathan, 56 ans, il doit un repas à Emma et Julien."
+    function toString (name) {
+        let cap,j=0;
+        
+        //On regarde si le nom figure dans notre set
+        
+        for(let i=0;i<copy_data.length;i++){
+            if(name==copy_data[i].name){
+                cap=1;
+                j=i;
+                break;
+            }
+            else {
+                cap=0;   
+            }
+        }
+        //not found
+        if (cap==0){
+            return "Le nom "+ name +" ne figure pas dans nos données";
+        }
+        
+        //found et traitements simple et multiple
+        else if(cap==1){
+            
+            if(copy_data[j].dept.length==1){
+                id=copy_data[j].dept[0];
+                return name + ", " +copy_data[j].age+" ans, "+ " doit un repas à "+ copy_data[id].name ;
+            }
+            
+            else{
+                id=[];
+                userid="";
+                for(let k=0;k<copy_data[j].dept.length;k++){
+                    id[k]=copy_data[j].dept[k];
+			  if(k==copy_data[j].dept.length-1)
+                    {
+                        userid=userid.concat(" et ",copy_data[copy_data[j].dept[k]].name);
+                        break;
+                    }
+                    userid=userid.concat(" ",copy_data[copy_data[j].dept[k]].name);
+                }
+            
+                return name + ", " +copy_data[j].age+" ans, "+ " doit "+copy_data[j].dept.length + " repas à"+ userid;
+            }
+        }
+    }
+    
+    /*fonction toString(name):
+    -renvoie un message d'erreur si le nom ne figure pas dans la base 
+    -renvoie les infos si le nom y figure*/
+    console.log(toString('Anthony'));
+}
+main()
